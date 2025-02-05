@@ -17,7 +17,7 @@
   }
 }
 #navbar.alter .logo {
-  background-image: url("/img/logo.svg");
+  background-image: url("/img/logo-white.svg");
 }
 #navbar.alter li a {
   color: white !important;

@@ -121,22 +121,76 @@
 @section('page')
 <x-page-header heading="Dashboard" subhead=""></x-page-header>
 
+
+
 <div class="container">
-    <!-- Overview Summary -->
-   <div class="mt-5 row  col-sm-12 mb-5 mx-auto ">
-        <div class="col-sm-2  text-light p-2 py-4 text-center">
-          
+<div class="row row-deck row-cards justify-content-center align-items-start">
+    <div class="col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Select Year</h3>
+            </div>
+
+            <div class="card-body">
+                <form method="GET" action="{{ route('admin.dashboard.index') }}" class="mb-3">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-8"></div>
+                        <div class="col-md-4 row">
+                            <div class="col-md-9">
+                                <select class="form-control" name="year" id="year">
+                                    @for ($y = date('Y'); $y >= 2000; $y--)
+                                        <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="col-sm-1  text-light p-2 py-4 text-center">
-          
+    </div>
+    <!-- <div class=" col-md-12 row">
+        <div class=" col-md-6"></div>
+        <div class="col-md-6">
+            <form method="GET" action="{{ route('admin.dashboard.index') }}" class="mb-3">
+                <div class="row">
+                    <div class="col-md-12 row">
+                        <div class="col-md-6">
+                            <select class="form-control" name="year" id="year">
+                                @for ($y = date('Y'); $y >= 2000; $y--)
+                                    <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div> -->
+    <!-- Overview Summary -->
+   <div class="mt-5 row  col-sm-12 mb-5 mx-auto gap-2 ">
+        <div class="col-sm-2 text-light p-2 py-4 text-center">
+           
         </div>
         <div class="col-sm-2  text-light p-2 py-4 text-center" style="background-color:rgb(25, 148, 9)">
             <p style="font-size:20px;font-weight:bold">{{ $totalBookingCount }}</p> 
-            <strong>Approved Bookings</strong>
+            <strong>Payment Completed Bookings</strong>
         </div>
         <div class="col-sm-2  text-light p-2 py-4 text-center" style="background-color:rgb(4, 84, 17)">
             <p style="font-size:20px;font-weight:bold">{{ number_format($totalRevenue, 2) }}</p> 
             <strong>Total Revenue</strong>
+        </div>
+        <div class="col-sm-2  text-light p-2 py-4 text-center" style="background-color:rgb(241, 132, 59)">
+            <p style="font-size:20px;font-weight:bold">{{ $totalBookingCount_pending }}</p> 
+            <strong>Payment Pending Bookings</strong>
         </div>
         <div class="col-sm-2 text-light p-2 py-4 text-center" style="background-color:rgb(236, 107, 67)">
             <p style="font-size:20px;font-weight:bold">{{ number_format($totalPending, 2) }}</p> 
@@ -145,9 +199,9 @@
         <!-- <div class="col-sm-2 text-light p-2 py-4 text-center" style="background-color:rgb(21, 116, 104)">
             <p style="font-size:20px;font-weight:bold">{{ $totalBookingCount_all }}</p> 
             <strong>Total Request</strong>
-        </div>
+        </div> -->
     
-        <div class="col-sm-2 bg-primary text-light p-2 py-4 text-center">
+        <!-- <div class="col-sm-2 bg-primary text-light p-2 py-4 text-center">
             <p style="font-size:20px;font-weight:bold">{{ $totalFacilityCount }}</p> 
             <strong>Total Facilities</strong>
         </div>
@@ -199,111 +253,7 @@
 
 
 
-    <!-- District-Wise Summary -->
-    <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card p-3 "  style="overflow-x: scroll;">
-                <h3>District-Wise Summary</h3>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>District</th>
-                            <th>Locations</th>
-                            <th>Facilities</th>
-                            <th>Confirmed Bookings</th>
-                            <th>Total Revenue</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($districts as $district => $data)
-                            <tr>
-                                <td>{{ $district }}</td>
-                                <td>{{ $data['total_locations'] }}</td>
-                                <td>{{ $data['total_facilities'] }}</td>
-                                <td>{{ $data['total_confirmed_bookings'] }}</td>
-                                <td>{{ number_format($data['total_revenue'], 2) }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="col-md-6 text-dark" style="background-color:rgb(255, 255, 255);border-radius: 12px;">
-            <div class=" col-md-12">
-                <div>
-                    
-                    <div class="  row col-md-12 px-3 pt-3">
-                        <div class=" col-md-2  flex ">
-                            <p class=" text-success" style="font-size:20px;font-weight:bold">{{ $totalBookingCount_all }}</p>
-                        </div>
-                        <div class=" col-md-10 item-end justify-end">
-                            <strong><p>Total Request</p></strong>
-                        </div>
-                    </div>
-                    <div class="">
-                        <div class="  row col-md-12">
-                            <div class=" col-md-10">
-                                <p>Number of requests approved by the admin.</p>
-                            </div>
-                            <div class=" col-md-2">
-                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->approved_count }}</p>
-                            </div>
-                        </div>
-                        <div class="  row col-md-12">
-                            <div class=" col-md-10">
-                                <p>Requests from startups or communities not processed yet.</p>
-                            </div>
-                            <div class=" col-md-2">
-                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->requested_count }}</p>
-                            </div>
-                        </div>
-
-                        <div class="  row col-md-12">
-                            <div class=" col-md-10">
-                                <p>Requests moved to pending.</p>
-                            </div>
-                            <div class=" col-md-2">
-                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->pending_count }}</p>
-                            </div>
-                        </div>
-
-                        <div class="  row col-md-12">
-                            <div class=" col-md-10">
-                                <p>Payment request completed.</p>
-                            </div>
-                            <div class=" col-md-2">
-                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->confirmed_count }}</p>
-                            </div>
-                        </div>
-
-                        <div class="  row col-md-12">
-                            <div class=" col-md-10">
-                                <p>Cancelled requests.</p>
-                            </div>
-                            <div class=" col-md-2">
-                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->cancelled_count }}</p>
-                            </div>
-                        </div>
-                      
-                      
-                    </div>
-                </div>
-
-            
-                <div class="row col-md-12">
-                    <div class="col-sm-6  p-2 text-center">
-                        <p style="font-size:20px;font-weight:bold">{{ $totalFacilityCount }}</p> 
-                        <strong>Total Facilities</strong>
-                    </div>
-                    <div class="col-sm-6 p-2 text-center">
-                        <p style="font-size:20px;font-weight:bold">{{ $totalStartupUsers }}</p> 
-                        <strong>Users</strong>
-                    </div>
-               </div>
-            </div>
-        </div>
-    </div>
-
+  
    
 
     <div class="row my-5">
@@ -362,6 +312,111 @@
 
     </div>
 
+  <!-- District-Wise Summary -->
+  <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card p-3 "  style="overflow-x: scroll;">
+                <h3>District-Wise Summary</h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>District</th>
+                            <th>Locations</th>
+                            <th>Facilities</th>
+                            <th>Confirmed Bookings</th>
+                            <th>Total Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($districts as $district => $data)
+                            <tr>
+                                <td>{{ $district }}</td>
+                                <td>{{ $data['total_locations'] }}</td>
+                                <td>{{ $data['total_facilities'] }}</td>
+                                <td>{{ $data['total_confirmed_bookings'] }}</td>
+                                <td>{{ number_format($data['total_revenue'], 2) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- <div class="col-md-6 text-dark" style="background-color:rgb(255, 255, 255);border-radius: 12px;">
+            <div class=" col-md-12">
+                <div>
+                    
+                    <div class="  row col-md-12 px-3 pt-3">
+                        <div class=" col-md-2  flex ">
+                            <p class=" text-success" style="font-size:20px;font-weight:bold">{{ $totalBookingCount_all }}</p>
+                        </div>
+                        <div class=" col-md-10 item-end justify-end">
+                            <strong><p>Total Request</p></strong>
+                        </div>
+                    </div>
+                    <div class="">
+                        <div class="  row col-md-12">
+                            <div class=" col-md-10">
+                                <p>Number of requests approved by the admin.</p>
+                            </div>
+                            <div class=" col-md-2">
+                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->approved_count }}</p>
+                            </div>
+                        </div>
+                        <div class="  row col-md-12">
+                            <div class=" col-md-10">
+                                <p>Payment request completed.</p>
+                            </div>
+                            <div class=" col-md-2">
+                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->confirmed_count }}</p>
+                            </div>
+                        </div>
+                        <div class="  row col-md-12">
+                            <div class=" col-md-10">
+                                <p>Requests not processed yet.</p>
+                            </div>
+                            <div class=" col-md-2">
+                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->requested_count }}</p>
+                            </div>
+                        </div>
+
+                        <div class="  row col-md-12">
+                            <div class=" col-md-10">
+                                <p>Requests moved to pending.</p>
+                            </div>
+                            <div class=" col-md-2">
+                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->pending_count }}</p>
+                            </div>
+                        </div>
+
+                      
+
+                        <div class="  row col-md-12">
+                            <div class=" col-md-10">
+                                <p>Cancelled requests.</p>
+                            </div>
+                            <div class=" col-md-2">
+                                <p style="font-size:20px;font-weight:bold">{{ $bookingStatusCount->cancelled_count }}</p>
+                            </div>
+                        </div>
+                      
+                      
+                    </div>
+                </div>
+
+            
+                <div class="row col-md-12">
+                    <div class="col-sm-6  p-2 text-center">
+                        <p style="font-size:20px;font-weight:bold">{{ $totalFacilityCount }}</p> 
+                        <strong>Total Facilities</strong>
+                    </div>
+                    <div class="col-sm-6 p-2 text-center">
+                        <p style="font-size:20px;font-weight:bold">{{ $totalStartupUsers }}</p> 
+                        <strong>Users</strong>
+                    </div>
+               </div>
+            </div>
+        </div> -->
+    </div>
 
 
 </div>

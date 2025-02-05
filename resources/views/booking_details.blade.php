@@ -167,6 +167,13 @@
         </div>
       </div>
 
+      @if ($booking->status != 'approved')
+        @if ($hasMultipleBookings)
+          <div class="alert alert-danger">
+              <h4>This user already has  approved/confirmed bookings this month.</h4>
+          </div>
+        @endif
+      @endif
       
       @if ($booking->status == "pending")
         

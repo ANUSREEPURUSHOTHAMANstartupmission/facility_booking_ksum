@@ -238,35 +238,59 @@
                                 </button>
 
                             </form> -->
-                            
-                            @if($total_balance <= 0)
-                                <form action="{{ route('facility.store', [$facility, 'time' => app('request')->input('time'), 'date' => app('request')->input('date'), 'duration' => app('request')->input('duration')]) }}" method="POST">
-                                    @csrf
-                                
-                                    {{-- Optional hidden inputs if needed --}}
-                                    {{-- <input type="hidden" name="time" id="time" value="{{ app('request')->input('time') }}">
-                                    <input type="hidden" name="date" id="date" value="{{ app('request')->input('date') }}">
-                                    <input type="hidden" name="duration" id="duration" value="{{ app('request')->input('duration') }}"> --}}
+                            @if(auth()->user())
+                                @if($total_balance <= 0)
+                                    <form action="{{ route('facility.store', [$facility, 'time' => app('request')->input('time'), 'date' => app('request')->input('date'), 'duration' => app('request')->input('duration')]) }}" method="POST">
+                                        @csrf
                                     
-                                    <button class="book-btn ms-auto" type="submit">
-                                        <span>Continue</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                            <line x1="13" y1="18" x2="19" y2="12"></line>
-                                            <line x1="13" y1="6" x2="19" y2="12"></line>
-                                        </svg>
-                                    </button>
+                                        {{-- Optional hidden inputs if needed --}}
+                                        {{-- <input type="hidden" name="time" id="time" value="{{ app('request')->input('time') }}">
+                                        <input type="hidden" name="date" id="date" value="{{ app('request')->input('date') }}">
+                                        <input type="hidden" name="duration" id="duration" value="{{ app('request')->input('duration') }}"> --}}
+                                        
+                                        <button class="book-btn ms-auto" type="submit">
+                                            <span>Continue</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                <line x1="13" y1="18" x2="19" y2="12"></line>
+                                                <line x1="13" y1="6" x2="19" y2="12"></line>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if($total_balance > 0)
+                                    <div class="bg-danger mt-5 text-light p-2   " style="white-space:normal;font-size:14px">
+                                        Warning: You have a pending amount of ₹ {{$total_balance}}. Please clear the due before proceeding with another booking.
+                                    </div>
+                                    <a class="chk-btn" href="/home">Previous booking</a>
+
+                                @endif
+                                
+                            @endif
+
+                            @if(!auth()->user())
+                                <form action="{{ route('facility.store', [$facility, 'time' => app('request')->input('time'), 'date' => app('request')->input('date'), 'duration' => app('request')->input('duration')]) }}" method="POST">
+                                        @csrf
+                                    
+                                        {{-- Optional hidden inputs if needed --}}
+                                        {{-- <input type="hidden" name="time" id="time" value="{{ app('request')->input('time') }}">
+                                        <input type="hidden" name="date" id="date" value="{{ app('request')->input('date') }}">
+                                        <input type="hidden" name="duration" id="duration" value="{{ app('request')->input('duration') }}"> --}}
+                                        
+                                        <button class="book-btn ms-auto" type="submit">
+                                            <span>Continue</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                                <line x1="13" y1="18" x2="19" y2="12"></line>
+                                                <line x1="13" y1="6" x2="19" y2="12"></line>
+                                            </svg>
+                                        </button>
                                 </form>
                             @endif
 
-                            @if($total_balance > 0)
-                                <div class="bg-danger mt-5 text-light p-2   " style="white-space:normal;font-size:14px">
-                                    Warning: You have a pending amount of ₹ {{$total_balance}}. Please clear the due before proceeding with another booking.
-                                </div>
-                                <a class="chk-btn" href="/home">Previous booking</a>
-
-                            @endif
 
 
                         @else
@@ -332,8 +356,8 @@
                                                         if ($bookings->keys()->contains($facility->name."|".$facility->id) && 
                                                             $bookings[$facility->name."|".$facility->id]->keys()->contains($i)) {
                                                             foreach ($bookings[$facility->name."|".$facility->id][$i] as $item) {
-                                                                if ($item->status == "approved") {
-                                                                    $dayClass = 'bg-orange'; // Red for approved bookings
+                                                                if ($item->status != "cancelled") {
+                                                                    $dayClass = 'bg-red'; // Red for approved bookings
                                                                 }
                                                                 break; // Exit loop after assigning the first applicable class
                                                             }

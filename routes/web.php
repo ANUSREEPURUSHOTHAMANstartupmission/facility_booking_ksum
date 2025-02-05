@@ -119,9 +119,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
 
     Route::get('export', [ExportController::class, 'index'])->name('export.index');
     Route::post('export', [ExportController::class, 'store'])->name('export.store');
-
-
-Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
 
 });

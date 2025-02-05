@@ -75,6 +75,16 @@ class BookingController extends Controller
     public function show(Booking $booking){
 
         if($booking->user_id == auth()->user()->id){
+
+            $requestedMonth = Carbon::parse($booking->start)->format('Y-m'); // e.g., "2024-02"
+
+            $existingBookingsCount = Booking::where('user_id', $booking->user_id)
+                ->whereIn('status', ['approved', 'confirmed']) 
+                ->where('start', 'like', $requestedMonth . '%')
+                ->count();
+
+            $hasMultipleBookings = $existingBookingsCount >= 2;
+
             //::TODO:: Check availability
 
             if($booking->type == "visit"){
@@ -86,7 +96,7 @@ class BookingController extends Controller
                 $addons = Facility::where([['location_id', $booking->location_id],['is_addon', true]])->get();
             }
 
-            return view('booking_details', compact('booking', 'addons'));
+            return view('booking_details', compact('booking', 'addons','hasMultipleBookings'));
         }
         else{
             abort(401);

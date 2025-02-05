@@ -267,13 +267,16 @@
               </div>
               <div class="text-sm text-right mb-3">{{$booking->requested}}</div>
             @endif
-           
-            @if ($hasMultipleBookings)
-              <div class="alert alert-danger">
-                  <h4>This user already has {{$existingBookingsCount}} approved/confirmed bookings this month.</h4>
-              </div>
-             @endif
 
+            @if ($booking->status == 'requested')
+              @if ($hasMultipleBookings)
+                <div class="alert alert-danger">
+                    <h4>This user already has {{$existingBookingsCount}} approved/confirmed bookings this month.</h4>
+                </div>
+              @endif
+            @endif
+           
+           
 
             <div id="request-form" class="">
               <div class="row align-items-center">
