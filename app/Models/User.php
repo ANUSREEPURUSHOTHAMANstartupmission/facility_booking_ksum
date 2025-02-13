@@ -28,6 +28,8 @@ class User extends Authenticatable
         'uid',
         'category',
         'role_id',
+        'is_verified',
+
     ];
 
     /**
@@ -65,7 +67,7 @@ class User extends Authenticatable
 
         $this->loginTokens()->create([
             'token' => $otp,  // Store OTP as integer (no hashing needed)
-            'expires_at' => now()->addMinutes(10),
+            'expires_at' => now()->addMinutes(15),
         ]);
 
         // Send OTP via notification or email

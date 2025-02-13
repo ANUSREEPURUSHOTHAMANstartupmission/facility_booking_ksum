@@ -16,11 +16,12 @@
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form method="POST" action="{{ route('verify-otp') }}">
+                    <form method="POST" autocomplete="off" action="{{ route('verify-otp') }}">
                         @csrf
                         <div class="mb-3">
                             <label for="otp" class="form-label">Enter OTP</label>
-                            <input type="number" name="otp" id="otp" class="form-control" required>
+                            <input type="text" name="otp" class="form-control text-center" maxlength="6" pattern="\d{6}" required placeholder="Enter 6-digit OTP">
+
                             @error('otp') <small class="text-danger">{{ $message }}</small> @enderror
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Verify</button>

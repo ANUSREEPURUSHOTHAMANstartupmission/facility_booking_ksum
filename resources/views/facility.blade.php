@@ -38,13 +38,13 @@
         background-color: rgb(222, 224, 226) !important; 
     }
     .bg-red {
-        background-color:rgba(234, 16, 35, 0.61) !important;
+        background-color:#c70000 !important;
     }
     .bg-azure {
         background-color: #d1ecf1 !important;
     }
     .bg-orange {
-        background-color: #fff3cd !important;
+        background-color:rgb(245, 131, 8) !important;
     }
     .bg-green {
         background-color: #d4edda !important;
@@ -353,15 +353,35 @@
                                                             $dayClass = 'bg-red';
                                                         }
 
+                                                      
+
                                                         if ($bookings->keys()->contains($facility->name."|".$facility->id) && 
                                                             $bookings[$facility->name."|".$facility->id]->keys()->contains($i)) {
+                                                            
+                                                            $hasForenoon = false;
+                                                            $hasAfternoon = false;
+
                                                             foreach ($bookings[$facility->name."|".$facility->id][$i] as $item) {
                                                                 if ($item->status != "cancelled") {
-                                                                    $dayClass = 'bg-red'; // Red for approved bookings
+                                                                    // Check booking times
+                                                                    $startTime = \Carbon\Carbon::parse($item->start)->format('g:i A'); // Extract time in 12-hour format
+
+                                                                    if ($startTime == "9:00 AM") {
+                                                                        $hasForenoon = true;
+                                                                    } elseif ($startTime == "1:30 PM") {
+                                                                        $hasAfternoon = true;
+                                                                    }
                                                                 }
-                                                                break; // Exit loop after assigning the first applicable class
+                                                            }
+
+                                                            // Assign colors based on booking availability
+                                                            if ($hasForenoon && $hasAfternoon) {
+                                                                $dayClass = 'bg-red'; // Red for both slots booked
+                                                            } elseif ($hasForenoon || $hasAfternoon) {
+                                                                $dayClass = 'bg-orange'; // Orange for only one slot booked
                                                             }
                                                         }
+
                                                     @endphp
                                                     <div class="day {{$dayClass}}">
                                                         <strong>{{$i}}</strong>

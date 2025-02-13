@@ -5,16 +5,20 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class LoginUrlNotification extends Notification
+class Uidverification extends Notification
 {
     use Queueable;
 
     protected $otp;
     protected $expiresAt;
+    protected $email;
 
-    public function __construct($otp)
+
+    public function __construct($otp,$expiresAt,$email)
     {
         $this->otp = $otp;
+        $this->email = $email;
+
     }
 
     public function via($notifiable)
@@ -37,8 +41,10 @@ class LoginUrlNotification extends Notification
 {
     return (new MailMessage)
         ->subject('Verify Your Login')
-        ->view('mail.otp', [
+        ->view('mail.uidnotification', [
             'otp' => $this->otp,
+            'email' => $this->email,
+
         ]);
 }
 

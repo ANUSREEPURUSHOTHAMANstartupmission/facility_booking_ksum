@@ -79,7 +79,7 @@ class BookingController extends Controller
             $requestedMonth = Carbon::parse($booking->start)->format('Y-m'); // e.g., "2024-02"
 
             $existingBookingsCount = Booking::where('user_id', $booking->user_id)
-                ->whereIn('status', ['approved', 'confirmed']) 
+                ->whereIn('status', ['approved', 'confirmed','requested']) 
                 ->where('start', 'like', $requestedMonth . '%')
                 ->count();
 

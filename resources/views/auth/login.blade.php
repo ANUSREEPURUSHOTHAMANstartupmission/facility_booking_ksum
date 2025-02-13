@@ -39,14 +39,15 @@
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" autocomplete="off" action="{{ route('login') }}">
                         @csrf
                         <div class="mb-3">
-                        <x-input-field label="Email Address" type="email" name="email" placeholder="Enter email"></x-input-field>
+                        <x-input-field label="Email Address" type="email" name="email" placeholder="Enter email" autocomplete="false"></x-input-field>
 
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Sign in</button>
                       </form>
+                      
                 </div>
             </div>
         </div>

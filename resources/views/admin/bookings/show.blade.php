@@ -2,13 +2,14 @@
 
 @section('page')
     <x-page-header heading="Booking" subhead="Overview"></x-page-header>
-    <div class="row row-deck row-cards">
+    <div class="row ">
       <div class="col-sm-4">
         <div class="card">
           <div class="card-header">
             <h3 class="card-title">Booking</h3>
           </div>
           <div class="card-body">
+            
             <dl class="row">
               <dt class="col-5">Name:</dt>
               <dd class="col-7">{{$booking->user->name}}</dd>
@@ -23,11 +24,62 @@
               @if ($booking->user->uid)
                 <dt class="col-5">Unique ID:</dt>
                 <dd class="col-7">{{$booking->user->uid}}</dd>
+                @if($booking->user->is_verified=="0")
+                  <dt class="col-5">Unique ID verification</dt>
+                  <dd class="col-7 row">
+                    <div class="col-6">
+                      @if(auth()->check())
+                        {{$booking->user->is_verified ? 'Verified' : 'Not Verified' }}
+                      @endif
+                    </div>
+                    <div class="col-6">
+                      <img src="/img/cross.svg" style="height:20px">
+                    </div>
+                  </dd>
+                @endif
+
+                @if($booking->user->is_verified=="1")
+                  <dt class="col-5">Unique ID verification</dt>
+                  <dd class="col-7 row">
+                    <div class="col-4">
+                      @if(auth()->check())
+                        {{$booking->user->is_verified ? 'Verified' : 'Not Verified' }}
+                      @endif
+                    </div>
+                    <div class="col-4">
+                      <img src="/img/tick.svg" style="height:20px">
+                    </div>
+                  </dd>
+                  
+                  @if($uid_details)
+                    <h3>Startup Details</h3>
+                    <dt class="col-5">Name:</dt>
+                    <dd class="col-7">{{ $uid_details['name'] }}</dd>
+
+                    <dt class="col-5">District:</dt>
+                    <dd class="col-7">{{ $uid_details['registered_district'] }}</dd>
+
+                    <dt class="col-5">Registered Address:</dt>
+                    <dd class="col-7"> {{ $uid_details['registered_address'] }}</dd>
+
+                    <dt class="col-5">CIN:</dt>
+                    <dd class="col-7">{{ $uid_details['cin'] }}</dd>
+
+                    <dt class="col-5">Incorporation Date:</dt>
+                    <dd class="col-7">{{ $uid_details['incorp_date'] }}</dd>
+
+                    <dt class="col-5">Company Type:</dt>
+                    <dd class="col-7"> {{ $uid_details['incorp_type'] }}</dd>
+
+                  @endif
+
+                @endif
+               
               @endif
             </dl>
           </div>
           <div class="card-header">
-            <h3 class="card-title">Details</h3>
+            <h3 class="card-title">Booking Details</h3>
           </div>
           <div class="card-body">
             @if($booking->type == "visit")
@@ -127,228 +179,237 @@
             </div>
           </div>
         </div>
-      </div>
+        <div class="col-sm-12">
+          <div class="row mt-2 ">
+            <div class="col-sm-6">
+              
+              <div class="card mb-2">
+                <div class="card-body">
 
-    </div>
+                  @if($booking->type == "visit")
+                    <div class="mb-3">
+                      <label class="form-label">Participant List</label>
+                      <div class="form-control-plaintext">
+                        <a href="{{ Storage::url($booking->participants) }}" target="_blank">View List</a>
+                      </div>
+                    </div>
+                  @else
+                    <div class="mb-3">
+                      <label class="form-label">Purpose</label>
+                      <div class="form-control-plaintext">{{$booking->purpose}}</div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">No. of Participant</label>
+                      <div class="form-control-plaintext">{{$booking->participants}}</div>
+                    </div>
+                  @endif
 
-    <div class="row mt-2 justify-content-end">
-      <div class="col-sm-4">
-        
-        <div class="card mb-2">
-          <div class="card-body">
-
-            @if($booking->type == "visit")
-              <div class="mb-3">
-                <label class="form-label">Participant List</label>
-                <div class="form-control-plaintext">
-                  <a href="{{ Storage::url($booking->participants) }}" target="_blank">View List</a>
                 </div>
               </div>
-            @else
-              <div class="mb-3">
-                <label class="form-label">Purpose</label>
-                <div class="form-control-plaintext">{{$booking->purpose}}</div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">No. of Participant</label>
-                <div class="form-control-plaintext">{{$booking->participants}}</div>
-              </div>
-            @endif
 
+              @if ($booking->status == "requested" || $booking->status == "approved")
+                <div class="row">
+                  <div class=" col-md-6 col-12">
+                    <form class="card mb-2" action="{{route('admin.bookings.approve', [$booking])}}" method="POST">
+                      @csrf
+                      <div class="card-body">
+
+                        @if ($booking->requested)
+                          <div class="mb-3">
+                            <label class="form-label">Requested Discount</label>
+                            <div class="form-control-plaintext">{{$booking->requested}}</div>
+                          </div>
+                        @endif
+
+                        <div class="d-flex  justify-content-center">
+                          <button type="submit" class="btn 
+                            {{$booking->status == "requested"?"btn-success":''}}
+                            {{$booking->status == "approved"?"btn-danger":''}}
+                          mx-auto">
+                            {{$booking->status == "requested"?"Approve":''}}
+                            {{$booking->status == "approved"?"Revoke":''}}
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class=" col-md-6 col-12">
+                    <form class="card" action="{{route('admin.bookings.cancel', [$booking])}}" method="POST">
+                      @csrf
+                      <div class="card-body text-center">
+                        <button type="submit" class="btn btn-danger">Cancel</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              @endif
+
+              @if($booking->status == "approved" || $booking->status=="confirmed")
+                @if (count($booking->payments))
+                  <div class="card">
+                    <div class="card-header flex justify-content-between">
+                      <h4 class="card-title">Payments</h4>
+
+                      @if($booking->status == "confirmed")
+                        <a href="{{route('booking.receipt', [$booking->id])}}" target="_blank" class="btn btn-success btn-sm">
+                          View Invoice
+                        </a>
+                      @endif  
+                    </div>
+
+                    
+                    <div class="table-responsive">
+                      <table class="table table-vcenter card-table">
+                        <thead>
+                          <tr>
+                            <th class="text-center">Amount</th>
+                            <th class="text-center">Transaction</th>
+                            <th class="text-center">Status</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach ($booking->payments as $payment)
+                            <tr>
+                              <td class="text-center">Rs. {{$payment->amount}}</td>
+                              <td class="text-center">Rs. {{$payment->transaction}}</td>
+                              <td class="text-center">
+                                <span 
+                                  class="badge 
+                                        {{$payment->status == "pending" ? "bg-red" : ""}}                                    
+                                        {{$payment->status == "paid" ? "bg-green" : ""}}
+                                ">
+                                  {{$payment->status}}
+                                </span>
+                              </td>
+                              <td class="text-right">
+                                @if($payment->status == "pending")
+                                  <a href="{{route('admin.payments.view', [$payment->id])}}" class="btn btn-primary btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                      <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
+                                      <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
+                                    </svg>
+                                  </a>
+                                @endif
+                              </td>
+                            </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+
+                  </div>
+                @endif
+              @endif
+
+            </div>
+            <div class="col-sm-6">
+              <form class="card" action="{{route('admin.bookings.update',[$booking])}}" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="card-body">
+
+                  {{-- <label class="form-check">
+                    <input class="form-check-input" type="checkbox" {{$booking->requested?'checked':''}} id="request_discount">
+                    <span class="form-check-label">Provide Discount</span>
+                  </label> --}}
+
+                  @if($booking->requested)
+                    <div class="d-flex justify-content-end mb-3">
+                      <span class="badge bg-azure">Discount Requested</span>
+                    </div>
+                    <div class="text-sm text-right mb-3">{{$booking->requested}}</div>
+                  @endif
+
+                  @if ($booking->status == 'requested')
+                    @if ($hasMultipleBookings)
+                      <div class="alert alert-danger">
+                          <h4 class="text-justify">This user already has {{$existingBookingsCount}} approved/confirmed bookings this month; hence, they are not eligible for a discount.
+                            </h4>
+                      </div>
+                    @endif
+                  @endif
+                
+                
+
+                  <div id="request-form" class="">
+                    <div class="row align-items-center">
+                      <div class="col-5">
+                        Discount %
+                      </div>
+                      <div class="col-7">
+                        <input type="number" class="form-control" name="discount" id="disc_percent" {{$booking->status=="requested"?'':'disabled readonly'}} value="{{$booking->discount??0}}">
+                        @error('discount')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                      </div>
+                    </div>
+                  
+                    <div class="row align-items-center mt-2">
+                      <div class="col-5">
+                        Discount Reason
+                      </div>
+                      <div class="col-7">
+                        <input type="text" class="form-control" name="reason" {{$booking->status=="requested"?'':'disabled readonly'}} value="{{$booking->reason}}">
+                        @error('reason')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                      </div>
+                    </div>
+                    <div class="row align-items-center">
+                      <div class="col-5">
+                        Discount
+                      </div>
+                      <div class="col-7 mt-2">
+                        <h4 class="card-title m-0 text-right" id="disc_value">Rs. {{$booking->discount_amount}}</h4>
+                      </div>
+                    </div>
+                  </div>
+                    <div class="row align-items-center mt-2">
+                      <div class="col-5">
+                        Nett Total
+                      </div>
+                      <div class="col-7">
+                        <h4 id="nett_total" class="card-title m-0 text-right">Rs. {{$booking->total - $booking->discount_amount}}</h4>
+                      </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                      <div class="col-5">
+                        Paid
+                      </div>
+                      <div class="col-7">
+                        <h4 class="card-title m-0 text-right">Rs. {{$booking->paid}}</h4>
+                      </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                      <div class="col-5">
+                        Balance
+                      </div>
+                      <div class="col-7">
+                        <h1 id="balance" class="text-right">Rs. {{$booking->balance}}</h1>
+                      </div>
+                    </div>
+
+                    <div class="d-flex">
+                      @if ($booking->status=="requested")
+                        <button type="submit" class="btn btn-primary ms-auto">Save</button>
+                      @endif
+                    </div>
+                  
+                </div>
+              </form>
+            </div>
+        
           </div>
         </div>
-
-        @if ($booking->status == "requested" || $booking->status == "approved")
-          <form class="card mb-2" action="{{route('admin.bookings.approve', [$booking])}}" method="POST">
-            @csrf
-            <div class="card-body">
-
-              @if ($booking->requested)
-                <div class="mb-3">
-                  <label class="form-label">Requested Discount</label>
-                  <div class="form-control-plaintext">{{$booking->requested}}</div>
-                </div>
-              @endif
-
-              <div class="d-flex justify-content-center">
-                <button type="submit" class="btn 
-                  {{$booking->status == "requested"?"btn-success":''}}
-                  {{$booking->status == "approved"?"btn-danger":''}}
-                mx-auto">
-                  {{$booking->status == "requested"?"Approve":''}}
-                  {{$booking->status == "approved"?"Revoke":''}}
-                </button>
-              </div>
-            </div>
-          </form>
-
-          <form class="card" action="{{route('admin.bookings.cancel', [$booking])}}" method="POST">
-            @csrf
-            <div class="card-body text-center">
-              <button type="submit" class="btn btn-danger">Cancel</button>
-            </div>
-          </form>
-        @endif
-
-        @if($booking->status == "approved" || $booking->status=="confirmed")
-          @if (count($booking->payments))
-            <div class="card">
-              <div class="card-header flex justify-content-between">
-                <h4 class="card-title">Payments</h4>
-
-                @if($booking->status == "confirmed")
-                  <a href="{{route('booking.receipt', [$booking->id])}}" target="_blank" class="btn btn-success btn-sm">
-                    View Invoice
-                  </a>
-                @endif  
-              </div>
-
-              
-              <div class="table-responsive">
-                <table class="table table-vcenter card-table">
-                  <thead>
-                    <tr>
-                      <th class="text-center">Amount</th>
-                      <th class="text-center">Transaction</th>
-                      <th class="text-center">Status</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @foreach ($booking->payments as $payment)
-                      <tr>
-                        <td class="text-center">Rs. {{$payment->amount}}</td>
-                        <td class="text-center">Rs. {{$payment->transaction}}</td>
-                        <td class="text-center">
-                          <span 
-                            class="badge 
-                                  {{$payment->status == "pending" ? "bg-red" : ""}}                                    
-                                  {{$payment->status == "paid" ? "bg-green" : ""}}
-                          ">
-                            {{$payment->status}}
-                          </span>
-                        </td>
-                        <td class="text-right">
-                          @if($payment->status == "pending")
-                            <a href="{{route('admin.payments.view', [$payment->id])}}" class="btn btn-primary btn-sm">
-                              <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
-                                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
-                              </svg>
-                            </a>
-                          @endif
-                        </td>
-                      </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-              </div>
-
-            </div>
-          @endif
-        @endif
-
       </div>
-      <div class="col-sm-4">
-        <form class="card" action="{{route('admin.bookings.update',[$booking])}}" method="POST">
-          @csrf
-          @method('PUT')
-          <div class="card-body">
 
-            {{-- <label class="form-check">
-              <input class="form-check-input" type="checkbox" {{$booking->requested?'checked':''}} id="request_discount">
-              <span class="form-check-label">Provide Discount</span>
-            </label> --}}
-
-            @if($booking->requested)
-              <div class="d-flex justify-content-end mb-3">
-                <span class="badge bg-azure">Discount Requested</span>
-              </div>
-              <div class="text-sm text-right mb-3">{{$booking->requested}}</div>
-            @endif
-
-            @if ($booking->status == 'requested')
-              @if ($hasMultipleBookings)
-                <div class="alert alert-danger">
-                    <h4>This user already has {{$existingBookingsCount}} approved/confirmed bookings this month.</h4>
-                </div>
-              @endif
-            @endif
-           
-           
-
-            <div id="request-form" class="">
-              <div class="row align-items-center">
-                <div class="col-5">
-                  Discount %
-                </div>
-                <div class="col-7">
-                  <input type="number" class="form-control" name="discount" id="disc_percent" {{$booking->status=="requested"?'':'disabled readonly'}} value="{{$booking->discount??0}}">
-                  @error('discount')
-                      <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
-            
-              <div class="row align-items-center mt-2">
-                <div class="col-5">
-                  Discount Reason
-                </div>
-                <div class="col-7">
-                  <input type="text" class="form-control" name="reason" {{$booking->status=="requested"?'':'disabled readonly'}} value="{{$booking->reason}}">
-                  @error('reason')
-                      <div class="invalid-feedback">{{ $message }}</div>
-                  @enderror
-                </div>
-              </div>
-              <div class="row align-items-center">
-                <div class="col-5">
-                  Discount
-                </div>
-                <div class="col-7 mt-2">
-                  <h4 class="card-title m-0 text-right" id="disc_value">Rs. {{$booking->discount_amount}}</h4>
-                </div>
-              </div>
-            </div>
-              <div class="row align-items-center mt-2">
-                <div class="col-5">
-                  Nett Total
-                </div>
-                <div class="col-7">
-                  <h4 id="nett_total" class="card-title m-0 text-right">Rs. {{$booking->total - $booking->discount_amount}}</h4>
-                </div>
-              </div>
-
-              <div class="row align-items-center mt-2">
-                <div class="col-5">
-                  Paid
-                </div>
-                <div class="col-7">
-                  <h4 class="card-title m-0 text-right">Rs. {{$booking->paid}}</h4>
-                </div>
-              </div>
-
-              <div class="row align-items-center">
-                <div class="col-5">
-                  Balance
-                </div>
-                <div class="col-7">
-                  <h1 id="balance" class="text-right">Rs. {{$booking->balance}}</h1>
-                </div>
-              </div>
-
-              <div class="d-flex">
-                @if ($booking->status=="requested")
-                  <button type="submit" class="btn btn-primary ms-auto">Save</button>
-                @endif
-              </div>
-            
-          </div>
-        </form>
-      </div>
-      
     </div>
+
+    
 
     
     <div class="modal modal-blur fade" id="modal-team" tabindex="-1" style="display: none;" aria-hidden="true">

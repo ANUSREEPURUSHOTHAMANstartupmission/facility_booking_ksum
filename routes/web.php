@@ -34,6 +34,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\DashboardController;
 
+use App\Http\Controllers\UserControlleruid;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -203,3 +206,23 @@ Route::get('test', function(){
 
 Route::get('silogin', [StartupIndiaController::class, 'login_form'])->name('silogin');
 Route::get('silogin/callback', [StartupIndiaController::class, 'callback'])->name('silogin.callback');
+
+
+
+
+// ########
+
+Route::post('/verify-user', [UserControlleruid::class, 'verifyUser'])->name('uidlink');
+
+// Route::get('/verify-otpuid', function () {
+//     return view('otp-form');
+// })->name('otp.form');
+
+Route::post('/verify-otpuid', [UserControlleruid::class, 'verifyOtp'])->name('verify-otpuid');
+
+Route::get('/verify-otpuid', function (Request $request) {
+    if ($request->has('redirect_url')) {
+        session(['previous_url' => $request->query('redirect_url')]);
+    }
+    return view('otp-form');
+})->name('otp.form');

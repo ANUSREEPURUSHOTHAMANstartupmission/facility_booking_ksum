@@ -14,6 +14,8 @@ use App\Notifications\BookingApprovedNotification;
 use App\Tables\Admin\BookingTable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Helpers\UidHelper;
+
 
 class BookingController extends CRUDController
 {
@@ -130,7 +132,13 @@ class BookingController extends CRUDController
 
             $hasMultipleBookings = $existingBookingsCount >= 2;
 
-            return view('admin.bookings.show', compact('booking', 'addons', 'hasMultipleBookings','existingBookingsCount'));
+            $uid_details = null;
+            if ($booking->user->is_verified) {
+                $uid_details = UidHelper::getUidDetails($booking->user->uid);
+            }
+
+
+            return view('admin.bookings.show', compact('booking', 'addons', 'hasMultipleBookings','existingBookingsCount','uid_details'));
         }
 
 

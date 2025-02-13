@@ -30,6 +30,8 @@ class RegisterController extends Controller
             "organisation" => 'required',
             "category" => 'required',
             // "uid" => 'required',
+            "uid" => "required|unique:users,uid", // Ensure UID is unique
+
         ]);
 
         $user = new User();

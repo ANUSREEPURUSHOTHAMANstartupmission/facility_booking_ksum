@@ -103,7 +103,7 @@ class FacilityController extends Controller
         {
             
             $balance_amount = Booking::where('user_id', auth()->user()->id)
-            ->where('status', 'approved')
+            ->whereIn('status', ['approved', 'confirmed', 'requested'])
             ->get();
     
             $total_balance = $balance_amount->sum('balance');
@@ -125,24 +125,45 @@ class FacilityController extends Controller
 
 
 
-        if($available){
-
+        if ($available) {
             $booking = new Booking();
             $booking->user_id = auth()->user()->id;
             $booking->start = $start_date->toDateTimeString();
             $booking->end = $end_date->toDateTimeString();
             $booking->location_id = $facility->location_id;
-            $booking->save();
-
+        
             $hours = ceil($start_date->floatDiffInHours($end_date));
-            $rate = BookingHelper::calculate_rate($facility, $hours);
+            $rate = BookingHelper::calculate_rate($facility, $hours); 
+        
+            $discountAmount = 0; 
+        
+            if (auth()->user()->is_verified) {
+                $currentMonth = Carbon::now()->format('Y-m'); 
+        
+                $currentMonthBookings = Booking::where('user_id', auth()->user()->id)
+                    ->whereIn('status', ['approved', 'confirmed','requested'])
+                    ->where('start', 'like', $currentMonth . '%')
+                    ->count();
+        
+                if ($currentMonthBookings < 2) {
+                    // $discountPercentage = 500; 
+                    // $discountAmount = round(($rate * $discountPercentage) / 100, 2);
+                    $discountAmount=50;
 
-            //calculate rate
-            $booking->facilities()->attach([$facility->id => [ "amount" => $rate ]]);
-
+                }
+            }
+        
+            $booking->discount = $discountAmount; 
+            $booking->save();
+        
+            $booking->facilities()->attach([$facility->id => ["amount" => $rate]]);
+        
             return redirect()->route('booking.view', [$booking]);
-
         }
+        
+        
+        
+        
         else{
             return redirect()->back();
         }

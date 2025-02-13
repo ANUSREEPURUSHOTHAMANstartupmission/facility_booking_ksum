@@ -18,6 +18,21 @@
               <dd class="col-7">{{$booking->user->phone}}</dd>
               <dt class="col-5">Organisation:</dt>
               <dd class="col-7">{{$booking->user->organisation}}</dd>
+              @if ($booking->user->uid)
+                <dt class="col-5">Unique ID:</dt>
+                <dd class="col-7">{{$booking->user->uid}}</dd>
+                <dt class="col-5">Unique ID verification</dt>
+                <dd class="col-7 row">
+                  <div class="col-6">
+                  @if($booking->user->is_verified=="1")
+                      {{$booking->user->is_verified ? 'Verified' : 'Not Verified' }}
+                  @else
+                      <p>Not Verified</p>
+                  @endif
+                  </div>
+                 
+                </dd>
+              @endif
             </dl>
           </div>
           <div class="card-header">
@@ -167,19 +182,48 @@
         </div>
       </div>
 
-      @if ($booking->status != 'approved')
-        @if ($hasMultipleBookings)
-          <div class="alert alert-danger">
-              <h4>This user already has  approved/confirmed bookings this month.</h4>
-          </div>
-        @endif
-      @endif
+      <!-- Bootstrap Modal -->
+<div class="modal fade" id="verifyModal" tabindex="-1" aria-labelledby="verifyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verifyModalLabel">User Verification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ route('uidlink') }}" autocomplete="off">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="user_id" class="form-label">Enter User ID</label>
+                        <input type="text" class="form-control" name="user_id" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Verify</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+      
       
       @if ($booking->status == "pending")
         
-          <div class="col-sm-4">
+          <div class="col-sm-8">
             <div class="card">
               <div class="card-body">
+              @if($booking->type != "visit")
+                @if(auth()->user() && $booking->user->is_verified == "0")
+                  <div class="alert alert-info bg-info alert-dismissible fade show" role="alert" style="color:white;font-size:16px">
+                    <strong>Verify your unique ID before proceeding with the booking.</strong>  Only startups with a verified unique ID are eligible for the subsidized booking rate; otherwise, the full amount must be paid.
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <a target="_blank" href="{{ route('otp.form', ['redirect_url' => route('booking.view', ['booking' => $booking->id])]) }}" class="btn btn-info">Verify</a>
+                  </div>
+                @endif
+              @endif
+
+
+
                 <form class="row justify-content-end" action="{{route('booking.request', [$booking])}}" method="POST" enctype="multipart/form-data">
                   @csrf
                   <div class="col-sm-12" x-data="{open: {{$booking->requested?'true':'false'}} }">        
@@ -188,11 +232,18 @@
                       <x-input-file label="List of Visitors" name="file" ></x-input-field> 
                       <div class="small italics">List should container Name, Email, Phone number of individual visitors</div>                 
                     @else
-                      <label class="form-check">
+                      <!-- <label class="form-check">
                         <input class="form-check-input" type="checkbox" {{$booking->requested?'checked':''}} id="request_discount" x-model="open">
                         <span class="form-check-label">Request Discount</span>
-                      </label>
+                      </label> -->
+
+                    
                       
+                      @if ($hasMultipleBookings)
+                        <div class="alert alert-danger">
+                            <h4 style=" text-align:justify">You are not eligible to book at the subsidy rate as you already have two bookings at this rate this month. The discount will not be applied, and you must pay the full amount.</h4>
+                        </div>
+                      @endif
                       <template x-if="open==true">
                         <div id="request-form">
                           <x-select-field label="Reason for Discount" name="request" placeholder="Enter reason for discount" value="{{$booking->requested}}">
@@ -231,7 +282,9 @@
             Requested Discount: {{$booking->requested}}
           </p>
         @endif
+        
       @endif
+     
       
 
       @if ($booking->status == "pending" || $booking->status == "requested")
