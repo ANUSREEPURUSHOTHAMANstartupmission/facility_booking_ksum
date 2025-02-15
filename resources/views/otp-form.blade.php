@@ -1,12 +1,12 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="flex-fill d-flex flex-column justify-content-center py-4 h-100" style="min-height: 100vh">
-    <div class="row justify-content-center">
+<div class="flex-fill d-flex  justify-content-center py-4">
+    <div class="row justify-content-center pt-5">
         <div class="text-center mb-4">
             <a href="."><img src="{{ asset('./img/logo.svg') }}" height="100" alt="Logo"></a>
         </div>
-        <div class="col-md-4">
+        <div class="col-sm-12">
             <div class="card">
                 <div class="card-body">
 
@@ -22,7 +22,8 @@
                         <form method="POST" autocomplete="off" action="{{ route('uidlink') }}">
                             @csrf
                             <div class="mb-3">
-                                <x-input-field label="User ID" type="text" name="user_id" placeholder="Enter your UID" autocomplete="false"></x-input-field>
+                                
+                                <x-input-field label="Unique ID" type="text" name="user_id" placeholder="Enter your UID" autocomplete="false"></x-input-field>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">Next</button>
                         </form>
@@ -31,7 +32,7 @@
                     @if(session('success'))
                         <form method="POST" autocomplete="off" action="{{ route('verify-otpuid') }}">
                             @csrf
-                            <p class="text-muted text-center">OTP sent to <strong>{{ session('uid_email') }}</strong></p>
+                            <p class="text-muted text-center">OTP sent to the email registered with the unique ID.</p>
 
                             <input type="hidden" name="redirect_url" value="{{ session('previous_url') }}">
 

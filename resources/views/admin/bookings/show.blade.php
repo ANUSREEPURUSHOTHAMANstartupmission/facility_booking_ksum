@@ -23,34 +23,21 @@
               <dd class="col-7">{{$booking->user->category}}</dd>
               @if ($booking->user->uid)
                 <dt class="col-5">Unique ID:</dt>
-                <dd class="col-7">{{$booking->user->uid}}</dd>
-                @if($booking->user->is_verified=="0")
-                  <dt class="col-5">Unique ID verification</dt>
-                  <dd class="col-7 row">
-                    <div class="col-6">
-                      @if(auth()->check())
-                        {{$booking->user->is_verified ? 'Verified' : 'Not Verified' }}
+                <dd class="col-7" style="font-size: 12px">
+                  <div class="col-12">
+                      @if($booking->user->is_verified=="1")
+                        <h4 class="text-success">Verified</h4>
+                      @else
+                        <p class="text-danger">Not Verified</p>
                       @endif
-                    </div>
-                    <div class="col-6">
-                      <img src="/img/cross.svg" style="height:20px">
-                    </div>
-                  </dd>
-                @endif
+                  </div>
+                  {{$booking->user->uid}}
+                </dd>
+             
+               
 
                 @if($booking->user->is_verified=="1")
-                  <dt class="col-5">Unique ID verification</dt>
-                  <dd class="col-7 row">
-                    <div class="col-4">
-                      @if(auth()->check())
-                        {{$booking->user->is_verified ? 'Verified' : 'Not Verified' }}
-                      @endif
-                    </div>
-                    <div class="col-4">
-                      <img src="/img/tick.svg" style="height:20px">
-                    </div>
-                  </dd>
-                  
+                 
                   @if($uid_details)
                     <h3>Startup Details</h3>
                     <dt class="col-5">Name:</dt>

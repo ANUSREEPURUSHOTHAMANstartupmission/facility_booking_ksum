@@ -327,7 +327,7 @@
         </div>
         <div class="col-sm-2 text-light p-2 py-4 text-center" style="background-color:rgb(236, 107, 67)">
             <p style="font-size:20px;font-weight:bold">{{ number_format($totalPending, 2) }}</p> 
-            <strong>Total Pending</strong>
+            <strong>Total Pending Amount</strong>
         </div>
         <!-- <div class="col-sm-2 text-light p-2 py-4 text-center" style="background-color:rgb(21, 116, 104)">
             <p style="font-size:20px;font-weight:bold">{{ $totalBookingCount_all }}</p> 

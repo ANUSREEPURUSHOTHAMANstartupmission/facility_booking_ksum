@@ -1,12 +1,12 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="flex-fill d-flex flex-column justify-content-center py-4 h-100" style="min-height: 100vh">
-    <div class="row justify-content-center">
+<div class=" d-flex flex justify-content-center py-4 ">
+    <div class="row justify-content-center pt-5">
         <div class="text-center mb-4">
         <a href="."><img src={{asset("./img/logo.svg")}} height="100" alt=""></a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
                     

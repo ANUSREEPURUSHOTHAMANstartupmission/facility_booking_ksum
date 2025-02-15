@@ -30,7 +30,7 @@ class RegisterController extends Controller
             "organisation" => 'required',
             "category" => 'required',
             // "uid" => 'required',
-            "uid" => "required|unique:users,uid", // Ensure UID is unique
+            "uid" => "unique:users,uid", 
 
         ]);
 
@@ -47,10 +47,12 @@ class RegisterController extends Controller
         $user->role_id = $role->id;
         $user->save();
 
+        session(['email' => $request->email]);
+
         $user->sendLoginToken();
-        flash("Login Link has been send to your email", "success");
+        flash("OTP has been sent to your registered email.", "success");
         
-        return redirect()->route('login');
+        return redirect()->route('verify-otp');
 
     }
 }

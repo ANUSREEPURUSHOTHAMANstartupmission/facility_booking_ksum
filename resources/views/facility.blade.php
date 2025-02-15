@@ -26,7 +26,6 @@
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        overflow-y: scroll;
         text-align: center;
         font-size: 10px;
         font-weight:normal;
@@ -211,9 +210,28 @@
                         </div>
                     </form>
 
+                    
 
                     @if(app('request')->input('date') && app('request')->input('time'))
                         @if ($available)
+
+                        @if(auth()->user())
+                            @if(auth()->user()->is_verified == "0")
+                                <div class="alert bg-danger mt-4" style="color:white;font-size:13px;white-space:normal;text-align:justify">
+                                    <strong>Unique ID Not Verified.</strong> <br> If you are a startup with a KSUM Unique ID, verify your Unique ID to avail of the startup discount. If your Unique ID is not verified, you will be required to pay the full amount.
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <a class="chk-btn" href="{{ route('otp.form', ['redirect_url' => route('facility.view', ['facility' => $facility->id])]) }}" style="text-decoration: none" >Verify Unique Id
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            <line x1="13" y1="18" x2="19" y2="12"></line>
+                                            <line x1="13" y1="6" x2="19" y2="12"></line>
+                                        </svg>
+                                    </a>
+                                </div>
+                            @endif
+                        @endif
                             
                             <div class="facility-price"  >
                                 <small style="white-space:normal;font-size:14px">{{$facility->name}} x {{$hours}} Hours = </small><br>
@@ -249,7 +267,7 @@
                                         <input type="hidden" name="duration" id="duration" value="{{ app('request')->input('duration') }}"> --}}
                                         
                                         <button class="book-btn ms-auto" type="submit">
-                                            <span>Continue</span>
+                                            <span>Continue Booking</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-arrow-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                                                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -261,7 +279,7 @@
                                 @endif
 
                                 @if($total_balance > 0)
-                                    <div class="bg-danger mt-5 text-light p-2   " style="white-space:normal;font-size:14px">
+                                    <div class="bg-danger mt-5 text-light p-2   " style="white-space:normal;font-size:13px">
                                         Warning: You have a pending amount of ₹ {{$total_balance}}. Please clear the due before proceeding with another booking.
                                     </div>
                                     <a class="chk-btn" href="/home">Previous booking</a>

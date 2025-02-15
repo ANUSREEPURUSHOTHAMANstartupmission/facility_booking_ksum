@@ -26,6 +26,7 @@ class UserControlleruid extends Controller
         $uid = $uid_details['unique_id'];
     
         $existingUser = User::where('uid', $uid)->first();
+        
     
         if ($existingUser && $existingUser->id !== Auth::id()) {
             return redirect()->route('otp.form')->with('error', 'This Unique ID is already linked to a different account.');
@@ -71,8 +72,8 @@ class UserControlleruid extends Controller
                 // Clear session data
                 session()->forget(['uid', 'uid_email', 'show_otp', 'previous_url']);
     
-                // return redirect($previousUrl)->with('success', 'Verification successful.');
-                return redirect()->route('home')->with('success', 'Verification successful.');
+                return redirect($previousUrl)->with('success', 'Verification successful.');
+                // return redirect()->route('home')->with('success', 'Verification successful.');
 
             } else {
                 return back()->withErrors(['otp' => 'User not authenticated.']);

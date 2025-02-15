@@ -90,6 +90,9 @@
                 @foreach ($bookings as $key => $item)
                   <div class="venue text-truncate">
                     @php
+                    $holidayDates = $holidays->pluck('date')->map(function ($date) {
+        return \Carbon\Carbon::parse($date)->day; // Extract only the day
+    })->toArray();
                       $name = explode("|", $key)[0];
                       $fid = explode("|", $key)[1] ?? null;
                       $q = app('request')->query();
@@ -119,7 +122,14 @@
                           {{$item[$i]->count()}}
                         </div>
                       @else
-                        <div class="date"></div>
+                        @php
+                          $isHoliday = in_array($i, $holidayDates);
+                        @endphp
+                        <div class="date {{ $isHoliday ? 'bg-red' : '' }}">
+                            @if($item->keys()->contains($i))
+                                {{ $item[$i]->count() }}
+                            @endif
+                        </div>
                       @endif
                     @endfor
                   </div>

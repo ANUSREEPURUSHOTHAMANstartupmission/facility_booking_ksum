@@ -65,7 +65,7 @@
 
 
 
-    <footer class="foote text-light py-4" style="background-color:rgb(3, 6, 86);">
+    <footer class="foote text-light py-4" style="background-color:#232e3c;">
     <div class="container">
     <p class=" text-start">For assistance contact</p>
 

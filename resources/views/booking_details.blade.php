@@ -20,18 +20,17 @@
               <dd class="col-7">{{$booking->user->organisation}}</dd>
               @if ($booking->user->uid)
                 <dt class="col-5">Unique ID:</dt>
-                <dd class="col-7">{{$booking->user->uid}}</dd>
-                <dt class="col-5">Unique ID verification</dt>
-                <dd class="col-7 row">
-                  <div class="col-6">
-                  @if($booking->user->is_verified=="1")
-                      {{$booking->user->is_verified ? 'Verified' : 'Not Verified' }}
-                  @else
-                      <p>Not Verified</p>
-                  @endif
+                <dd class="col-7" style="font-size: 12px">
+                  <div class="col-12">
+                      @if($booking->user->is_verified=="1")
+                        <h4 class="text-success">Verified</h4>
+                      @else
+                        <p class="text-danger">Not Verified</p>
+                      @endif
                   </div>
-                 
+                  {{$booking->user->uid}}
                 </dd>
+               
               @endif
             </dl>
           </div>
@@ -211,7 +210,7 @@
           <div class="col-sm-8">
             <div class="card">
               <div class="card-body">
-              @if($booking->type != "visit")
+              {{-- @if($booking->type != "visit")
                 @if(auth()->user() && $booking->user->is_verified == "0")
                   <div class="alert alert-info bg-info alert-dismissible fade show" role="alert" style="color:white;font-size:16px">
                     <strong>Verify your unique ID before proceeding with the booking.</strong>  Only startups with a verified unique ID are eligible for the subsidized booking rate; otherwise, the full amount must be paid.
@@ -220,7 +219,7 @@
                     <a target="_blank" href="{{ route('otp.form', ['redirect_url' => route('booking.view', ['booking' => $booking->id])]) }}" class="btn btn-info">Verify</a>
                   </div>
                 @endif
-              @endif
+              @endif --}}
 
 
 
@@ -241,7 +240,7 @@
                       
                       @if ($hasMultipleBookings)
                         <div class="alert alert-danger">
-                            <h4 style=" text-align:justify">You are not eligible to book at the subsidy rate as you already have two bookings at this rate this month. The discount will not be applied, and you must pay the full amount.</h4>
+                            <h4 style=" text-align:justify">You are not eligible for the subsidy rate as you have already used your two subsidized bookings for this month. The discount will not be applied, and you will need to pay the full amount for this booking.</h4>
                         </div>
                       @endif
                       <template x-if="open==true">

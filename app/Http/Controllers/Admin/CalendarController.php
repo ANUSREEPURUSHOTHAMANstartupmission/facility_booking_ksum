@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Facility;
+use App\Models\Holiday;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -60,13 +61,18 @@ class CalendarController extends Controller
         $empty = Carbon::parse($month." ".$year)->firstOfMonth()->dayOfWeek;
 
         $month = $month ?? date('M');
+
+        $holidays = Holiday::whereMonth('date', $start->month)
+        ->whereYear('date', $start->year)
+        ->get();
+
         
         if($facility){
             $facility = Facility::find($facility);
-            return view('admin.calendar.details', compact('month', 'year', 'bookings', 'days', 'facility', 'empty'));
+            return view('admin.calendar.details', compact('month', 'year', 'bookings', 'days', 'facility', 'empty','holidays'));
         }
         else{
-            return view('admin.calendar.list', compact('month', 'year', 'bookings', 'days'));
+            return view('admin.calendar.list', compact('month', 'year', 'bookings', 'days','holidays'));
         }
     }
 }

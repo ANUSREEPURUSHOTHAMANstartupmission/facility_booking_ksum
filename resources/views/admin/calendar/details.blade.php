@@ -30,6 +30,10 @@
       border-radius: 5px;
       margin-bottom: 2px;
     }
+    .bg-holiday {
+      background-color: red !important;
+      color: white;
+    }
   </style>
 @endsection
 
@@ -47,18 +51,9 @@
             <form class="d-flex">
               <input type="hidden" name="facility" value="{{ app('request')->input('facility'); }}">
               <select name="month" class="form-select">
-                <option {{ $month == "Jan" ? 'selected' : '' }}>Jan</option>
-                <option {{ $month == "Feb" ? 'selected' : '' }}>Feb</option>
-                <option {{ $month == "Mar" ? 'selected' : '' }}>Mar</option>
-                <option {{ $month == "Apr" ? 'selected' : '' }}>Apr</option>
-                <option {{ $month == "May" ? 'selected' : '' }}>May</option>
-                <option {{ $month == "Jun" ? 'selected' : '' }}>Jun</option>
-                <option {{ $month == "Jul" ? 'selected' : '' }}>Jul</option>
-                <option {{ $month == "Aug" ? 'selected' : '' }}>Aug</option>
-                <option {{ $month == "Sep" ? 'selected' : '' }}>Sep</option>
-                <option {{ $month == "Oct" ? 'selected' : '' }}>Oct</option>
-                <option {{ $month == "Nov" ? 'selected' : '' }}>Nov</option>
-                <option {{ $month == "Dec" ? 'selected' : '' }}>Dec</option>
+                @foreach (["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] as $m)
+                  <option {{ $month == $m ? 'selected' : '' }}>{{$m}}</option>
+                @endforeach
               </select>
               <input type="number" name="year" class="form-control" value="{{ $year ?? date('Y'); }}">
               <button type="submit" class="btn btn-secondary">View</button>
@@ -66,44 +61,51 @@
           </div>
         </div>
 
-
-        {{-- <pre>{{$bookings->keys()->contains($facility->name."|".$facility->id)}}</pre>
-        <pre>{{$bookings[$facility->name."|".$facility->id]}}</pre> --}}
-
         <div class="card-body">
           <div class="flex flex-col">
             <div class="row">
 
-              @foreach (array('Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat') as $item)
-                <div class="day_head">{{$item}}</div>
+              @foreach (["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as $day)
+                <div class="day_head">{{$day}}</div>
               @endforeach
 
-              @for ($i=0; $i<$empty; $i++)
+              @for ($i = 0; $i < $empty; $i++)
                 <div class="day"></div>
               @endfor
 
-              @for ($i=1; $i<=$days; $i++)
-                <div class="day">
+              @php
+                $holidayDates = $holidays->pluck('date')->map(function ($date) {
+                    return \Carbon\Carbon::parse($date)->day;
+                })->toArray();
+              @endphp
+
+              @for ($i = 1; $i <= $days; $i++)
+                @php
+                  $isHoliday = in_array($i, $holidayDates);
+                @endphp
+                <div class="day {{ $isHoliday ? 'bg-holiday' : '' }}">
                   <strong>{{$i}}</strong>
 
-                  @if( $bookings->keys()->contains($facility->name."|".$facility->id) && $bookings[$facility->name."|".$facility->id]->keys()->contains($i))
+                  @if($bookings->keys()->contains($facility->name."|".$facility->id) && $bookings[$facility->name."|".$facility->id]->keys()->contains($i))
                     @foreach ($bookings[$facility->name."|".$facility->id][$i] as $item)
                       @php
-                        $class = $item->status=="pending"? 'bg-red':'';
-                        $class .= $item->status=="requested"? 'bg-azure':'';
-                        $class .= $item->status=="approved"? 'bg-orange':'';
-                        $class .= $item->status=="confirmed"? 'bg-green':'';
+                        $class = match ($item->status) {
+                          "pending" => "bg-red",
+                          "requested" => "bg-azure",
+                          "approved" => "bg-orange",
+                          "confirmed" => "bg-green",
+                          default => ""
+                        };
                       @endphp
                       <a href="{{route('admin.bookings.show',[$item->id])}}" class="booking">
-                        <span class="time">{{Carbon::parse($item->start)->format('g:i a')}}</span> - 
-                        <span class="time">{{Carbon::parse($item->end)->format('g:i a')}}</span>
+                        <span class="time">{{\Carbon\Carbon::parse($item->start)->format('g:i a')}}</span> - 
+                        <span class="time">{{\Carbon\Carbon::parse($item->end)->format('g:i a')}}</span>
                         @foreach ($item->facilities as $fitem)
                           <span class="badge {{$class}}">{{$fitem->name}}</span>                            
                         @endforeach
                       </a>
                     @endforeach
                   @endif
-
                 </div>
               @endfor
 
